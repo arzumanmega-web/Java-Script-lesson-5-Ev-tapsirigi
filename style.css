@@ -7,9 +7,10 @@ body {
 }
 
 .calendar-container {
-    padding: 10px;
-    width: 320px;
+    padding: 15px;
+    width: 340px;
     background-color: rgb(179, 230, 230);
+    border-radius: 8px;
 }
 
 .input-group {
@@ -33,7 +34,7 @@ button {
     border: 1px solid #adadad;
     cursor: pointer;
     font-size: 14px;
-    margin-bottom: 25px;
+    margin-bottom: 15px;
 }
 
 button:hover {
@@ -55,15 +56,27 @@ table {
 td {
     border: 1px solid #b5b5b5;
     width: 14.28%;
-    height: 35px;
+    height: 40px;
     text-align: center;
     font-size: 14px;
     color: #000;
 }
 
-
-#calendarGovde td:hover{
+#calendarGovde td:hover {
     background-color: #c9adad;
     cursor: pointer;
+}
 
+#dayResult input {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 5px;
+    margin-bottom: 8px;
+    padding: 4px;
+}
+
+#dayResult button {
+    display: block;
+    width: 100%;
 }

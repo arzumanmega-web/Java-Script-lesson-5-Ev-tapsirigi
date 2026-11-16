@@ -8,9 +8,8 @@ function setCookie(key, value, seconds) {
 
     let expires = "expires=" + d.toUTCString();
 
-    document.cookie = key + "=" + value + ";" + expires + ";path=/";
+    document.cookie = key + "=" + getCookieValue(key) + value + ";" + expires + ";path=/";
 }
-
 
 function getCookieValue(key) {
     let name = key + "=";
@@ -31,13 +30,6 @@ function getCookieValue(key) {
     return "";
 }
 
-setCookie("key","dddasd",122);
-
-console.log(getCookieValue("key"));
-
-
-
-
 function tarixResponse() {
     const monthArr = [];
     const month = document.querySelector("#month");
@@ -49,7 +41,6 @@ function tarixResponse() {
         while (date.getMonth() + 1 == month.value && date.getFullYear() == year.value) {
             date.setDate(counter);
             monthInfo = date.toDateString().split(" ");
-            console.log(monthInfo);
             if (date.getDate() == counter) {
                 let week;
                 switch (monthInfo[0]) {
@@ -82,7 +73,7 @@ function tarixResponse() {
                     hefte: week,
                     ay: monthInfo[1],
                     il: date.getFullYear(),
-                    qeydGun: "Bu tarixde hec bir qeyd yoxdur  "
+                    qeydGun: ""
                 };
                 counter++;
             }
@@ -92,17 +83,18 @@ function tarixResponse() {
     return monthArr;
 }
 
-
 var monthArr;
 
 function noteResult(index) {
     const note = document.querySelector("#note");
-    
+
     if (note.value) {
-        dayResult.innerHTML = note.value+`: ${monthArr[index].gun}-${monthArr[index].ay}-${monthArr[index].il}`;
-        monthArr[index].qeydGun = note.value+`: ${monthArr[index].gun}-${monthArr[index].ay}-${monthArr[index].il}`;
-        const teg=document.getElementById(`${index}`);
-        teg.style.backgroundColor="rgba(12, 151, 42, 0.99)";
+        dayResult.innerHTML = note.value + `: ${monthArr[index].gun}-${monthArr[index].ay}-${monthArr[index].il}`;
+        monthArr[index].qeydGun = note.value + `: ${monthArr[index].gun}-${monthArr[index].ay}-${monthArr[index].il}`;
+        const teg = document.getElementById(`${index}`);
+        teg.style.backgroundColor = "rgba(12, 151, 42, 0.99)";
+        let noteDay = JSON.stringify(monthArr[index]);
+        setCookie("calen1", `${noteDay}++`, 10000);
     } else {
         const note2 = document.querySelector("#result");
         if (note2) note2.innerHTML = "yalnis daxil etdiniz...";
@@ -110,22 +102,26 @@ function noteResult(index) {
 }
 
 function DateCheck(index) {
-    for(let i = 0; i < monthArr.length; i++){
-        const teg=document.getElementById(`${i}`);
-        if(teg.style.backgroundColor=="rgba(233, 182, 74, 0.99)"){
-            teg.style.backgroundColor="";
+    for (let i = 0; i < monthArr.length; i++) {
+        const teg = document.getElementById(`${i}`);
+        if (teg && teg.style.backgroundColor == "rgba(233, 182, 74, 0.99)") {
+            teg.style.backgroundColor = "";
         }
-        
     }
     const note2 = document.querySelector("#result");
-    const teg=document.getElementById(`${index}`);
-    if(teg.style.backgroundColor==""){
-        teg.style.backgroundColor="rgba(233, 182, 74, 0.99)";
+    const teg = document.getElementById(`${index}`);
+    if (teg && teg.style.backgroundColor == "") {
+        teg.style.backgroundColor = "rgba(233, 182, 74, 0.99)";
     }
-    note2.innerHTML = "";
-    dayResult.innerHTML = `${monthArr[index].qeydGun}
-    <label style="display: block;"><input type="text" id="note"></label>
-    <button style="width: 60%;" onclick="noteResult(${index})">Yeni qeydi tesdiq edin</button>`;
+    if (note2) note2.innerHTML = "";
+    
+
+    dayResult.innerHTML = `
+        <div style="font-weight: bold; margin-bottom: 5px;">${monthArr[index].qeydGun}</div>
+        <div>Gunu qeyde alin:</div>
+        <input type="text" id="note">
+        <button onclick="noteResult(${index})">Yeni qeydi tesdiq edin</button>
+    `;
 }
 
 function tarixResult() {
@@ -135,6 +131,8 @@ function tarixResult() {
     let count = 0;
     let liveTime = new Date();
     let info = liveTime.toDateString().split(" ");
+    let daysResult = getCookieValue("calen1");
+    let splitDate = daysResult.split("++");
     
     for (let i = 0; i < weekCount; i++) {
         let weeks = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -143,7 +141,7 @@ function tarixResult() {
             for (let k = 0; k < 7; k++) {
                 tegCalendar += `<td>${weeks[k]}</td>`;
             }
-            tegCalendar += `</tr>`; 
+            tegCalendar += `</tr>`;
         }
 
         tegCalendar += `<tr>`;
@@ -155,11 +153,31 @@ function tarixResult() {
             }
 
             if (monthArr[count] != undefined) {
-                (info[1] == monthArr[count].ay
-                    && monthArr[count].il == liveTime.getFullYear()
-                    && monthArr[count].gun == liveTime.getDate())
-                    ? tegCalendar += `<td id="${count}" onclick="DateCheck(${count})" style="background-color: brown;" >${monthArr[count].gun}</td>`
-                    : tegCalendar += `<td id="${count}" onclick="DateCheck(${count})" >${monthArr[count].gun}</td>`;
+                for (let j = 0; j < splitDate.length; j++) {
+                    if (splitDate[j] != "") {
+                        let dayM = JSON.parse(splitDate[j]);
+                        if (dayM.il == monthArr[count].il
+                            && dayM.ay == monthArr[count].ay
+                            && dayM.gun == monthArr[count].gun) {
+                            monthArr[count].qeydGun = dayM.qeydGun;
+                        }
+                    }
+                }
+                
+                if (monthArr[count].qeydGun != "") {
+                    (info[1] == monthArr[count].ay
+                        && monthArr[count].il == liveTime.getFullYear()
+                        && monthArr[count].gun == liveTime.getDate())
+                        ? tegCalendar += `<td id="${count}" onclick="DateCheck(${count})" style="background-color: rgba(184, 8, 8, 0.99);" >${monthArr[count].gun}</td>`
+                        : tegCalendar += `<td id="${count}" onclick="DateCheck(${count})" style="background-color: rgba(12, 151, 42, 0.99);" >${monthArr[count].gun}</td>`;
+                } else {
+                    (info[1] == monthArr[count].ay
+                        && monthArr[count].il == liveTime.getFullYear()
+                        && monthArr[count].gun == liveTime.getDate())
+                        ? tegCalendar += `<td id="${count}" onclick="DateCheck(${count})" style="background-color: rgba(184, 8, 8, 0.99);" >${monthArr[count].gun}</td>`
+                        : tegCalendar += `<td id="${count}" onclick="DateCheck(${count})" >${monthArr[count].gun}</td>`;
+                }
+
                 count++;
             } else {
                 tegCalendar += `<td></td>`;
