@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Calendar</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="calendar-container">
+        <!-- Yuxarıdakı inputlar və düymə -->
+        <div class="input-group">
+            <label>Month: <input type="text" id="month"></label>
+            <label>Year: <input type="text" id="year"></label>
+        </div>
+        <button onclick="tarixResult()" id="generateBtn">Generate</button>
+
+
+        <h2 id="monthDay">Enter date</h2>
+
+        <table id="calendarGovde">
+
+        </table>
+        <h4 id="dayResult"></h4>
+        <p id="result"></p>
+    </div>
+
+    <script src="index.js"></script>
+</body>
+
+</html>
